@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国传统泥塑艺术馆</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f3e6;
+            color: #5c3d24;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%23d4c0a1" stroke-width="0.5"/></svg>');
+        }
+        
+        header {
+            background: linear-gradient(to right, #8b0000, #b22222);
+            color: #f8ecc9;
+            text-align: center;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 Q40,5 60,20 T100,20 M20,60 Q40,45 60,60 T100,60" fill="none" stroke="%23d4a72c" stroke-width="1" opacity="0.3"/></svg>');
+            opacity: 0.3;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .controls {
+            background: rgba(255, 245, 220, 0.9);
+            padding: 1.5rem;
+            margin: 1.5rem auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #8b0000;
+            font-size: 1.1rem;
+        }
+        
+        select, input {
+            padding: 10px 15px;
+            border: 2px solid #c19e6b;
+            border-radius: 6px;
+            background: #fffdf5;
+            font-size: 1rem;
+            color: #5c3d24;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        select:hover, select:focus, input:hover, input:focus {
+            border-color: #8b0000;
+            box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        .artwork {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            height: 320px;
+            position: relative;
+        }
+        
+        .artwork:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .image-container {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .artwork img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .artwork:hover img {
+            transform: scale(1.05);
+        }
+        
+        .artwork-info {
+            padding: 15px;
+            background: #fff;
+        }
+        
+        .artwork-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #8b0000;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .artwork-province {
+            font-size: 0.9rem;
+            color: #a67c52;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .artwork-province i {
+            color: #d4a72c;
+        }
+        
+        .hover-info {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(139, 0, 0, 0.85);
+            color: #f8ecc9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            text-align: center;
+        }
+        
+        .artwork:hover .hover-info {
+            opacity: 1;
+        }
+        
+        .hover-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #d4a72c;
+        }
+        
+        .hover-info p {
+            margin: 8px 0;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .type-tag {
+            display: inline-block;
+            background: #d4a72c;
+            color: #5c3d24;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        footer {
+            background: linear-gradient(to right, #5c3d24, #8b4513);
+            color: #f8ecc9;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.2rem;
+            border-radius: 10px;
+            min-width: 180px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4a72c;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+        }
+        
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #8b0000;
+            background: rgba(255, 245, 220, 0.7);
+            border-radius: 10px;
+            margin: 2rem auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #d4a72c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5c3d24;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.4rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .stat-card {
+                min-width: 140px;
+                padding: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-hands-clay"></i>
+            </div>
+        </div>
+        <h1>中国传统泥塑艺术馆</h1>
+        <p class="subtitle">泥塑艺术是我国一种古老常见的民间艺术，以泥土为原料，手工捏制成形。或素或彩，以人物、动物为主，反映民间生活与信仰。本馆收录了来自全国各地的珍贵泥塑作品，展现了中华传统手工艺的独特魅力。</p>
+    </header>
+    
+    <div class="controls">
+        <div class="filter-group">
+            <label for="province-filter"><i class="fas fa-map-marker-alt"></i> 按省份筛选</label>
+            <select id="province-filter">
+                <option value="all">全部省份</option>
+                <option value="江苏">江苏</option>
+                <option value="云南">云南</option>
+                <option value="河南">河南</option>
+                <option value="北京">北京</option>
+                <option value="山东">山东</option>
+                <option value="宁夏">宁夏</option>
+                <option value="青海">青海</option>
+                <option value="甘肃">甘肃</option>
+                <option value="内蒙古">内蒙古</option>
+                <option value="安徽">安徽</option>
+                <option value="吉林">吉林</option>
+                <option value="黑龙江">黑龙江</option>
+                <option value="广东">广东</option>
+                <option value="浙江">浙江</option>
+                <option value="陕西">陕西</option>
+                <option value="辽宁">辽宁</option>
+                <option value="贵州">贵州</option>
+                <option value="山西">山西</option>
+                <option value="河北">河北</option>
+                <option value="四川">四川</option>
+                <option value="湖北">湖北</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="theme-filter"><i class="fas fa-palette"></i> 按创作题材筛选</label>
+            <select id="theme-filter">
+                <option value="all">全部题材</option>
+                <option value="民间风俗">民间风俗</option>
+                <option value="文艺作品">文艺作品</option>
+                <option value="宗教信仰">宗教信仰</option>
+                <option value="神话传说">神话传说</option>
+                <option value="飞鸟走兽">飞鸟走兽</option>
+                <option value="古今历史">古今历史</option>
+                <option value="家国情怀">家国情怀</option>
+                <option value="建筑还原">建筑还原</option>
+                <option value="奇花异草">奇花异草</option>
+                <option value="古董仿制">古董仿制</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="search"><i class="fas fa-search"></i> 作品搜索</label>
+            <input type="text" id="search" placeholder="输入作品名称或省份...">
+        </div>
+        
+        <div class="filter-group">
+            <label for="sort"><i class="fas fa-sort"></i> 排序方式</label>
+            <select id="sort">
+                <option value="default">默认排序</option>
+                <option value="name-asc">名称 (A-Z)</option>
+                <option value="name-desc">名称 (Z-A)</option>
+                <option value="province">按省份</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">泥塑珍品</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">20</div>
+            <div class="stat-label">省份代表</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">10+</div>
+            <div class="stat-label">创作题材</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">500+年</div>
+            <div class="stat-label">艺术传承</div>
+        </div>
+    </div>
+    
+    <div class="gallery" id="gallery">
+        <!-- 泥塑作品将通过JavaScript动态生成 -->
+    </div>
+    
+    <footer>
+        <p>中国传统泥塑艺术馆 &copy; 2023 | 传承千年泥塑技艺，弘扬中华传统文化</p>
+        <p>本网站展示的泥塑作品数据来源于全国非物质文化遗产保护中心</p>
+    </footer>
+
+    <script>
+        // 泥塑作品数据 - 使用本地图片路径
+        const artworks = [
+            {project: "苏州泥塑", name: "顽童", theme: "民间风俗", image: "展会展示/苏州泥塑顽童.jpg", province: "江苏"},
+            {project: "苏州泥塑", name: "西厢记", theme: "文艺作品", image: "展会展示/苏州泥塑西厢记.jpg", province: "江苏"},
+            {project: "苏州泥塑", name: "观音菩萨32应化身", theme: "宗教信仰", image: "展会展示/苏州泥塑观音菩萨32应化身.jpg", province: "江苏"},
+            {project: "苏州泥塑", name: "和合二仙", theme: "神话传说", image: "展会展示/苏州泥塑和合二仙.jpg", province: "江苏"},
+            {project: "白族泥塑", name: "开秧门", theme: "民间风俗", image: "展会展示/白族泥塑开秧门.jpg", province: "云南"},
+            {project: "白族泥塑", name: "烤制喜洲粑粑", theme: "民间风俗", image: "展会展示/白族泥塑烤制喜洲粑粑.jpg", province: "云南"},
+            {project: "钧瓷泥塑", name: "童话故事", theme: "民间风俗", image: "展会展示/钧瓷泥塑童话故事.png", province: "河南"},
+            {project: "钧瓷泥塑", name: "暖冬", theme: "民间风俗", image: "展会展示/钧瓷泥塑暖冬.png", province: "河南"},
+            {project: "淮阳泥泥狗泥塑", name: "张氏泥泥狗", theme: "飞鸟走兽", image: "展会展示/淮阳泥泥狗泥塑张氏泥泥狗.jpg", province: "河南"},
+  {project: "淮阳泥泥狗泥塑", name: "张氏泥泥狗1", theme: "飞鸟走兽", image: "展会展示/淮阳泥泥狗泥塑张氏泥泥狗1.jpg", province: "河南"},
+ {project: "淮阳泥泥狗泥塑", name: "打虎", theme: "民间风俗", image: "展会展示/淮阳泥泥狗泥塑打虎.jpg", province: "河南"},
+            {project: "淮阳泥泥狗泥塑", name: "母子猴", theme: "飞鸟走兽", image: "展会展示/淮阳泥泥狗泥塑母子猴.jpg", province: "河南"},
+            {project: "彩塑京剧脸谱泥塑", name: "定军山", theme: "古今历史", image: "展会展示/彩塑京剧彩绘泥塑定军山.jpeg", province: "北京"},
+            {project: "彩塑京剧脸谱泥塑", name: "孙大圣", theme: "神话传说", image: "展会展示/彩塑京剧彩绘泥塑孙大圣.jpeg", province: "北京"},
+            {project: "泥咕咕泥塑", name: "大狮少狮", theme: "飞鸟走兽", image: "展会展示/浚县泥咕咕泥塑大狮少狮.jpg", province: "河南"},
+            {project: "泥咕咕泥塑", name: "瓦岗军", theme: "古今历史", image: "展会展示/浚县泥咕咕泥塑瓦岗军.jpg", province: "河南"},
+  {project: "泥咕咕泥塑", name: "猴抱猪", theme: "飞鸟走兽", image: "展会展示/浚县泥咕咕泥塑猴抱猪.jpg", province: "河南"},
+  {project: "泥咕咕泥塑", name: "乡村娃娃", theme: "民间风俗", image: "展会展示/浚县泥咕咕泥塑乡村娃娃.jpg", province: "河南"},
+            {project: "枣庄泥塑", name: "送子观音", theme: "宗教信仰", image: "展会展示/枣庄泥塑送子观音.jpg", province: "山东"},
+            {project: "枣庄泥塑", name: "西天取经", theme: "文艺作品", image: "展会展示/枣庄泥塑西天取经.jpg", province: "山东"},
+            {project: "安丘泥人泥塑", name: "老子骑青牛", theme: "古今历史", image: "展会展示/安丘泥人泥塑老子骑青牛.jpg", province: "山东"},
+            {project: "安丘泥人泥塑", name: "反弹琵琶", theme: "古今历史", image: "展会展示/安丘泥人反弹琵琶.jpeg", province: "山东"},
+  {project: "安丘泥人泥塑", name: "一对火", theme: "民间风俗", image: "展会展示/安丘泥人一对火.jpeg", province: "山东"},
+  {project: "安丘泥人泥塑", name: "看爷爷喝酒", theme: "民间风俗", image: "展会展示/安丘泥人看爷爷喝酒.jpeg", province: "山东"},
+            {project: "泰山泥塑", name: "华夏龙柱", theme: "飞鸟走兽", image: "展会展示/泰山泥塑华夏龙柱.jpg", province: "山东"},
+            {project: "泰山泥塑", name: "麒麟图腾", theme: "飞鸟走兽", image: "展会展示/泰山泥塑麒麟图腾.jpg", province: "山东"},
+            {project: "曹州泥偶", name: "母爱", theme: "民间风俗", image: "展会展示/曹州泥偶母爱.jpeg", province: "山东"},
+  {project: "曹州泥偶泥塑", name: "十二月", theme: "民间风俗", image: "展会展示/曹州泥偶十二月.jpeg", province: "山东"},
+{project: "曹州泥偶泥塑", name: "下棋", theme: "民间风俗", image: "展会展示/曹州泥偶下棋.jpeg", province: "山东"},
+{project: "曹州泥偶泥塑", name: "自行车", theme: "民间风俗", image: "展会展示/曹州泥偶自行车.jpeg", province: "山东"},
+            {project: "沂蒙泥塑", name: "锯锅锯盆", theme: "民间风俗", image: "展会展示/沂蒙泥塑锯锅锯盆.jpg", province: "山东"},
+  {project: "沂蒙泥塑", name: "卖货郎", theme: "民间风俗", image: "展会展示/沂蒙泥塑卖货郎.jpg", province: "山东"},
+  {project: "沂蒙泥塑", name: "卖糖葫芦", theme: "民间风俗", image: "展会展示/沂蒙泥塑卖糖葫芦.jpg", province: "山东"},
+{project: "沂蒙泥塑", name: "烙煎饼", theme: "民间风俗", image: "展会展示/沂蒙泥塑烙煎饼.jpg", province: "山东"},
+            {project: "小郭泥塑", name: "桃园结义", theme: "古今历史", image: "展会展示/小郭泥塑桃园结义.png", province: "山东"},
+  {project: "小郭泥塑", name: "福娃", theme: "古今历史", image: "展会展示/小郭泥塑福娃.png", province: "山东"},
+ {project: "小郭泥塑", name: "麒麟送子", theme: "古今历史", image: "展会展示/小郭泥塑麒麟送子.png", province: "山东"},
+ {project: "黄河滩泥塑", name: "国是家", theme: "家国情怀", image: "展会展示/黄河滩泥塑国是家.jpg", province: "山东"},
+ {project: "黄河滩泥塑", name: "孝到先", theme: "家国情怀", image: "展会展示/黄河滩泥塑孝到先.jpg", province: "山东"},
+            {project: "黄河滩泥塑", name: "三顾茅庐", theme: "古今历史", image: "展会展示/黄河滩泥塑三顾茅庐.jpg", province: "山东"},
+ {project: "黄河滩泥塑", name: "童年趣事", theme: "民间风俗", image: "展会展示/黄河滩泥塑童年趣事.jpg", province: "山东"},
+            {project: "杨氏彩塑", name: "志在高远", theme: "飞鸟走兽", image: "展会展示/杨氏彩塑志在高远.jpg", province: "宁夏"},
+            {project: "杨氏彩塑", name: "长城", theme: "建筑还原", image: "展会展示/杨氏彩塑长城.jpg", province: "宁夏"},
+            {project: "李氏彩塑", name: "财神爷", theme: "宗教信仰", image: "展会展示/李氏祖传财神爷.jpg", province: "河南"},
+            {project: "药泥塑", name: "新龙药泥藏式面具", theme: "宗教信仰", image: "展会展示/药泥塑新龙药泥藏式面具.jpg", province: "青海"},
+            {project: "药泥塑", name: "新龙药泥藏式面具1", theme: "宗教信仰", image: "展会展示/药泥塑新龙药泥藏式面具1.jpg", province: "青海"},
+            {project: "西峰泥塑", name: "弯腰老者", theme: "民间风俗", image: "展会展示/西峰泥塑弯腰老者.jpg", province: "甘肃"},
+       {project: "西峰泥塑", name: "黄土母亲", theme: "家国情怀", image: "展会展示/西峰泥塑黄土母亲.jpg", province: "甘肃"},
+            {project: "济南兔子王泥塑", name: "坐元宝兔子王", theme: "飞鸟走兽", image: "展会展示/济南兔子王泥塑坐元宝兔子王.jpg", province: "山东"},
+     {project: "济南兔子王泥塑", name: "抱拳", theme: "飞鸟走兽", image: "展会展示/济南兔子王泥塑抱拳.jpg", province: "山东"},
+            {project: "武家泥塑", name: "草原风情", theme: "民间风俗", image: "展会展示/武家泥塑草原风情.jpg", province: "内蒙古"},
+ {project: "武家泥塑", name: "金马送宝", theme: "飞鸟走兽", image: "展会展示/武家泥塑金马送宝.jpg", province: "内蒙古"},
+            {project: "天水泥塑", name: "喂药", theme: "民间风俗", image: "展会展示/天水泥塑喂药.jpg", province: "甘肃"},
+       {project: "天水泥塑", name: "拄拐", theme: "民间风俗", image: "展会展示/天水泥塑拄拐.jpg", province: "甘肃"},
+            {project: "郝氏泥塑", name: "锯木", theme: "民间风俗", image: "展会展示/郝氏泥塑锯木.jpg", province: "江苏"},
+            {project: "古泫泥塑", name: "同是挑水", theme: "文艺作品", image: "展会展示/古泫泥塑挑水.jpg", province: "山西"},
+            {project: "淮北泥塑", name: "牛抬头", theme: "飞鸟走兽", image: "展会展示/淮北泥塑牛抬头.jpg", province: "安徽"},
+ {project: "淮北泥塑", name: "劳动人民", theme: "民间风俗", image: "展会展示/淮北泥塑劳动人民.jpg", province: "安徽"},
+            {project: "徐州泥塑", name: "村里的留守老人", theme: "民间风俗", image: "展会展示/徐州泥塑村里的留守老人.jpg", province: "江苏"},
+            {project: "钟氏泥塑", name: "人参娃娃", theme: "民间风俗", image: "展会展示/钟氏泥塑人参娃娃.jpg", province: "吉林"},
+ {project: "钟氏泥塑", name: "鹿乡福娃", theme: "民间风俗", image: "展会展示/钟氏泥塑鹿乡福娃.jpg", province: "吉林"},
+ {project: "钟氏泥塑", name: "天池怪兽", theme: "飞鸟走兽", image: "展会展示/钟氏泥塑天池怪兽.jpg", province: "吉林"},
+ {project: "钟氏泥塑", name: "三仙女沐浴", theme: "神话传说", image: "展会展示/钟氏泥塑三仙女沐浴.jpg", province: "吉林"},
+            {project: "阿城泥塑", name: "其乐融融", theme: "民间风俗", image: "展会展示/阿城泥塑其乐融融.jpg", province: "黑龙江"},
+ {project: "阿城泥塑", name: "二胡团", theme: "民间风俗", image: "展会展示/阿城泥塑二胡团.jpg", province: "黑龙江"},
+{project: "阿城泥塑", name: "街头巷口", theme: "民间风俗", image: "展会展示/阿城泥塑街头巷口.jpg", province: "黑龙江"},
+            {project: "捷胜泥塑", name: "观音", theme: "神话传说", image: "展会展示/捷胜泥塑观音.jpg", province: "广东"},
+   {project: "捷胜泥塑", name: "飞天", theme: "神话传说", image: "展会展示/捷胜泥塑飞天.jpg", province: "广东"},
+   {project: "捷胜泥塑", name: "武财神", theme: "神话传说", image: "展会展示/捷胜泥塑武财神.jpg", province: "广东"},
+{project: "捷胜泥塑", name: "舞麒麟", theme: "飞鸟走兽", image: "展会展示/捷胜泥塑舞麒麟.jpg", province: "广东"},
+            {project: "吴川泥塑", name: "李白醉酒", theme: "古今历史", image: "展会展示/吴川泥塑李白醉酒.png", province: "广东"},
+            {project: "吴川泥塑", name: "彩龙腾盛世", theme: "飞鸟走兽", image: "展会展示/吴川泥塑彩龙腾盛世.png", province: "广东"},
+   {project: "吴川泥塑", name: "舞二真", theme: "古今历史", image: "展会展示/吴川泥塑舞二真.png", province: "广东"},
+            {project: "大吴泥塑", name: "海瑞打严嵩", theme: "古今历史", image: "展会展示/大吴泥塑海瑞打严嵩.jpg", province: "广东"},
+ {project: "大吴泥塑", name: "人生礼俗", theme: "民间风俗", image: "展会展示/大吴泥塑人生礼俗.jpg", province: "广东"},
+ {project: "大吴泥塑", name: "搜楼", theme: "古今历史", image: "展会展示/大吴泥塑搜楼.jpg", province: "广东"},
+{project: "大吴泥塑", name: "王茂生进酒", theme: "古今历史", image: "展会展示/大吴泥塑王茂生进酒.jpg", province: "广东"},
+            {project: "嵊州泥塑", name: "朝圣路上", theme: "宗教信仰", image: "展会展示/嵊州泥塑朝圣路上.gif", province: "浙江"},
+            {project: "凤翔泥塑", name: "挂虎", theme: "飞鸟走兽", image: "展会展示/凤翔泥塑挂虎.jpg", province: "陕西"},
+            {project: "红土泥塑", name: "金刚", theme: "宗教信仰", image: "展会展示/红土泥塑金刚.jpg", province: "辽宁"},
+            {project: "惠山泥塑", name: "阿福", theme: "民间风俗", image: "展会展示/惠山泥塑阿福.jpg", province: "江苏"},
+            {project: "北京兔儿爷彩泥塑", name: "兔儿爷", theme: "飞鸟走兽", image: "展会展示/北京兔儿爷泥塑.jpg", province: "北京"},
+ {project: "北京兔儿爷泥塑", name: "兔儿爷1", theme: "飞鸟走兽", image: "展会展示/北京兔儿爷泥塑1.jpeg", province: "北京"},
+            {project: "苗族泥哨泥塑", name: "龙凤", theme: "飞鸟走兽", image: "展会展示/苗族泥哨泥塑龙凤.jpg", province: "贵州"},
+            {project: "淄博泥塑", name: "虢国夫人游春图", theme: "古今历史", image: "展会展示/淄博泥塑虢国夫人游春图.jpg", province: "山东"},
+{project: "淄博泥塑", name: "泥塑古画", theme: "民间风俗", image: "展会展示/淄博泥塑泥塑古画.jpg", province: "山东"},
+{project: "淄博泥塑", name: "唐人宫乐图", theme: "古今历史", image: "展会展示/淄博泥塑唐人宫乐图.jpeg", province: "山东"},
+{project: "淄博泥塑", name: "文苑图", theme: "古今历史", image: "展会展示/淄博泥塑文苑图.jpg", province: "山东"},
+            {project: "三痴斋泥塑", name: "关圣帝君", theme: "古今历史", image: "展会展示/三痴斋泥塑关圣帝君.jpg", province: "河北"},
+            {project: "长安泥塑", name: "看戏泥塑", theme: "民间风俗", image: "展会展示/长安泥塑看戏泥塑.jpeg", province: "陕西"},
+            {project: "玉田泥塑", name: "提刀关羽", theme: "古今历史", image: "展会展示/玉田泥塑提刀关羽.jpg", province: "河北"},
+            {project: "张北泥塑", name: "西天取经", theme: "文艺作品", image: "展会展示/枣庄泥塑西天取经.jpg", province: "河北"},
+ {project: "惠山泥塑", name: "孔雀恋", theme: "文艺作品", image: "展会展示/惠山泥塑孔雀恋.jpg", province: "江苏"},
+ {project: "惠山泥塑", name: "门神", theme: "神话传说", image: "展会展示/惠山泥塑门神.jpg", province: "江苏"},
+ {project: "惠山泥塑", name: "西厢记", theme: "文艺作品", image: "展会展示/惠山泥塑西厢记.jpg", province: "江苏"},
+ {project: "徐州泥塑", name: "十里红妆", theme: "民间风俗", image: "展会展示/徐州泥塑十里红妆.png", province: "江苏"},
+ {project: "徐州泥塑", name: "远方的呼唤", theme: "民间风俗", image: "展会展示/徐州泥塑远方的呼唤.jpg", province: "江苏"},
+ {project: "徐州泥塑", name: "冬", theme: "民间风俗", image: "展会展示/徐州泥塑冬.jpg", province: "江苏"},
+ {project: "白族泥塑", name: "大理守艺人", theme: "宗教信仰", image: "展会展示/白族泥塑大理守艺人系列.png", province: "云南"},
+ {project: "白族泥塑", name: "大理守艺人1", theme: "民间风俗", image: "展会展示/白族泥塑大理守艺人系列1.png", province: "云南"},
+ {project: "钧瓷泥塑", name: "捉小鸟", theme: "民间风俗", image: "展会展示/钧瓷泥塑捉小鸟.png", province: "河南"},
+ {project: "钧瓷泥塑", name: "金秋时节", theme: "民间风俗", image: "展会展示/钧瓷泥塑金秋时节.png", province: "河南"},
+  {project: "枣庄泥塑", name: "等待", theme: "飞鸟走兽", image: "展会展示/枣庄泥塑等待.jpg", province: "河南"},
+  {project: "枣庄泥塑", name: "二人", theme: "民间风俗", image: "展会展示/枣庄泥塑二人.jpg", province: "河南"},
+  {project: "李氏彩塑", name: "观音", theme: "飞鸟走兽", image: "展会展示/李氏祖传观音.jpg", province: "河南"},
+  {project: "李氏彩塑", name: "仙山神阁", theme: "民间风俗", image: "展会展示/李氏祖传泥塑仙山神阁.jpg", province: "河南"},
+  {project: "柘城泥塑", name: "童趣", theme: "民间风俗", image: "展会展示/柘城泥塑童趣.jpg", province: "河南"},
+  {project: "柘城泥塑", name: "天天向上", theme: "民间风俗", image: "展会展示/柘城泥塑天天向上.jpg", province: "河南"},
+  {project: "彩塑京剧彩绘泥塑", name: "穆桂英", theme: "文艺作品", image: "展会展示/彩塑京剧彩绘泥塑穆桂英.jpeg", province: "北京"},
+  {project: "彩塑京剧彩绘泥塑", name: "关公", theme: "古今历史", image: "展会展示/彩塑京剧彩绘泥塑关公.jpeg", province: "北京"},
+  {project: "刘氏泥塑", name: "哪吒", theme: "文艺作品", image: "展会展示/刘氏泥塑哪吒.jpg", province: "山东"},
+{project: "刘氏泥塑", name: "大福娃娃", theme: "民间风俗", image: "展会展示/刘氏泥塑大福娃娃.jpg", province: "山东"},
+{project: "杨氏家庭泥塑", name: "吃糖葫芦", theme: "民间风俗", image: "展会展示/杨氏家庭泥塑吃糖葫芦.jpeg", province: "宁夏"},
+{project: "杨氏家庭泥塑", name: "毛主席过六盘", theme: "家国情怀", image: "展会展示/杨氏家庭泥塑毛主席过六盘.jpeg", province: "宁夏"},
+{project: "杨氏家庭泥塑", name: "云仙", theme: "神话传说", image: "展会展示/杨氏家庭泥塑云仙.jpeg", province: "宁夏"},
+{project: "临淮泥塑", name: "粗塑", theme: "民间风俗", image: "展会展示/临淮泥塑粗塑.jpeg", province: "安徽"},
+{project: "临淮泥塑", name: "击鼓吹唢", theme: "民间风俗", image: "展会展示/临淮泥塑击鼓吹唢.jpeg", province: "安徽"},
+{project: "何氏泥塑", name: "瓜果飘香", theme: "民间风俗", image: "展会展示/何氏泥塑瓜果飘香.jpeg", province: "安徽"},
+{project: "何氏泥塑", name: "开仓放粮", theme: "民间风俗", image: "展会展示/何氏泥塑开仓放粮.jpg", province: "安徽"},
+
+        ];
+
+
+        // 获取画廊容器
+        const gallery = document.getElementById('gallery');
+        
+        // 渲染作品函数
+        function renderArtworks(filteredArtworks = artworks) {
+            gallery.innerHTML = '';
+            
+            if (filteredArtworks.length === 0) {
+                gallery.innerHTML = '<div class="empty-message"><i class="fas fa-search fa-2x"></i><h3>没有找到匹配的作品</h3><p>请尝试其他筛选条件</p></div>';
+                return;
+            }
+            
+            filteredArtworks.forEach(art => {
+                const artworkEl = document.createElement('div');
+                artworkEl.className = 'artwork';
+                artworkEl.innerHTML = `
+                    <div class="image-container">
+                        <img src="${art.image}" alt="${art.name}" loading="lazy">
+                        <div class="hover-info">
+                            <h3>${art.name}</h3>
+                            <p><strong>项目：</strong>${art.project}</p>
+                            <p><strong>创作题材：</strong>${art.theme}</p>
+                            <p><strong>来源省份：</strong>${art.province}</p>
+                            <span class="type-tag">${art.theme}</span>
+                        </div>
+                    </div>
+                    <div class="artwork-info">
+                        <div class="artwork-title">${art.name}</div>
+                        <div class="artwork-province"><i class="fas fa-map-marker-alt"></i> ${art.province}</div>
+                    </div>
+                `;
+                gallery.appendChild(artworkEl);
+            });
+        }
+        
+        // 初始渲染
+        renderArtworks();
+        
+        // 筛选功能
+        const provinceFilter = document.getElementById('province-filter');
+        const themeFilter = document.getElementById('theme-filter');
+        const searchInput = document.getElementById('search');
+        const sortSelect = document.getElementById('sort');
+        
+        function filterAndSortArtworks() {
+            const provinceValue = provinceFilter.value;
+            const themeValue = themeFilter.value;
+            const searchValue = searchInput.value.toLowerCase();
+            const sortValue = sortSelect.value;
+            
+            let filtered = artworks.filter(art => {
+                const matchesProvince = provinceValue === 'all' || art.province === provinceValue;
+                const matchesTheme = themeValue === 'all' || art.theme === themeValue;
+                const matchesSearch = searchValue === '' || 
+                    art.name.toLowerCase().includes(searchValue) || 
+                    art.project.toLowerCase().includes(searchValue) ||
+                    art.province.toLowerCase().includes(searchValue);
+                
+                return matchesProvince && matchesTheme && matchesSearch;
+            });
+            
+            // 排序功能
+            if (sortValue === 'name-asc') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name, 'zh'));
+            } else if (sortValue === 'name-desc') {
+                filtered.sort((a, b) => b.name.localeCompare(a.name, 'zh'));
+            } else if (sortValue === 'province') {
+                filtered.sort((a, b) => a.province.localeCompare(b.province, 'zh'));
+            }
+            
+            renderArtworks(filtered);
+        }
+        
+        // 添加事件监听
+        provinceFilter.addEventListener('change', filterAndSortArtworks);
+        themeFilter.addEventListener('change', filterAndSortArtworks);
+        searchInput.addEventListener('input', filterAndSortArtworks);
+        sortSelect.addEventListener('change', filterAndSortArtworks);
+        
+        // 图片加载失败处理
+        document.addEventListener('error', function(e) {
+            if (e.target.tagName.toLowerCase() === 'img') {
+                e.target.style.backgroundColor = '#f0e6d2';
+                e.target.parentElement.innerHTML += `
+                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(240,230,210,0.9); padding:20px; text-align:center;">
+                        <i class="fas fa-exclamation-triangle fa-2x" style="color:#8b0000; margin-bottom:10px;"></i>
+                        <h3>图片加载失败</h3>
+                        <p>${e.target.alt}</p>
+                    </div>
+                `;
+            }
+        }, true);
+    </script>
+</body>
+</html>
