@@ -321,6 +321,22 @@
                 font-size: 2rem;
             }
         }
+        .sun-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle, 
+        #f8ecc9 0%,         /* 中心亮黄色 */
+        rgba(248, 236, 201, 0.8) 30%,  /* 中间过渡色 */
+        transparent 70%     /* 外圈透明 */
+    );
+    box-shadow: 0 0 20px #f8ecc9, 0 0 40px rgba(248, 236, 201, 0.5);
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    z-index: 0;
+}
     </style>
 </head>
 <body>
